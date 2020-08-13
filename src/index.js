@@ -1,108 +1,85 @@
-const ToDoList = function(listArr = []) {
+const ToDoList = function(tasks = []) {
 
-    this.listArr = listArr;
+    this.tasks = tasks;
 }
 
 
-ToDoList.prototype.findDublicate = function(text) {
-    let task = this.listArr.find(function(item) {
-        return item.text === text;
-    });
-    if (task === undefined) {
-        return true;
-    } else {
-        return false;
-    };
-};
-
-
-ToDoList.prototype.addTask = function(text) {
-    if(this.findDublicate(text)) {
-        let newTask = {
-            name: "Task number",
+ToDoList.prototype.addTask = function(value) {
+    
+        let task = {
             date: new Date(),
-            status: false,
-            text: "",
-            }
-        newTask.name = "Task №" + Number(this.listArr.length + 1);
-        newTask.text = text;
-        this.listArr.push(newTask);
-    } else {
-        throw new Error("This task already exist");
+            completed: false,
+            value,
+        }    
+        this.tasks = [task, ...this.tasks];
     };
-};
 
 
-ToDoList.prototype.deleteTask = function(text, confirmation) {
+ToDoList.prototype.deleteTask = function(value, confirmation) {
     if (confirmation) {
-        let task = this.listArr.find(function(item) {
-        return item.text === text;
+        let task = this.tasks.find(task => {
+        return task.value === value;
      });
-     let i = this.listArr.indexOf(task);
+     let i = this.tasks.indexOf(task);
      if (i !== -1) {
-         this.listArr.splice(i, 1);
+         this.tasks.splice(i, 1);
+         this.tasks = [...this.tasks];
      };
        
      }; 
 };
 
 
- ToDoList.prototype.editTask = function(text, newText, confirmation) {
+ToDoList.prototype.editTask = function(value, newValue, confirmation) {
     if (confirmation) {
-        let task = this.listArr.find(function(item) {
-        return item.text === text;
-        });
-        if(this.findDublicate(newText)) {
-            task.text = newText; 
-        } else {
-            throw new Error("This task already exist");
+        this.tasks = this.tasks.map(task => {
+        let newTask = task;
+        if(task.value === value) {
+            newTask = {
+                ...task,
+                value: newValue
+            };
         };
+        return newTask;
+        });
     };  
+};
+
+
+ToDoList.prototype.completeTask = function(value){
+    this.tasks = this.tasks.map(task => ({
+        ...task,
+        completed: task.value === value ? !task.completed : task.completed
+    }));
 };
 
 
 Object.defineProperty(ToDoList.prototype, 'getInfo', {
     get() {
-        let completedList = this.listArr.filter(function(item) {
-            return item.status === true;
-        });
-            return `Total: ${this.listArr.length}, completed: ${completedList.length}`;
+       return this.tasks.reduce(
+            (acc, task) => {
+            task.completed && acc.completed++;
+            return acc;
+            },
+            {total: this.tasks.length, completed: 0}
+        );
     }
-  });
+}
+);
 
 
-mustReadList = new ToDoList([
-    {
-    name: "Task №1",
-    date: new Date(2020, 6, 29),
-    status: false,
-    text: "Ulysses",
-    },
-     
-    {
-    name: "Task №2",
-    date: new Date(2020, 7, 1),
-    status: true,
-    text: "Brave New World",
-    },
-    
-    {
-    name: "Task №3",
-    date: new Date(2020, 7, 3),
-    status: false,
-    text: "Les Misérables",
-    },
-]);
+let mustReadList = new ToDoList([]);
 
-
-var confDel = confirm("Are you sure?");
-var confEdit = confirm("Do you want to save changes?");
-mustReadList.addTask("Harry Potter and the Goblet of fire");
-mustReadList.deleteTask("Ulysses", confDel);
-mustReadList.editTask("Harry Potter and the Goblet of fire", "Harry Potter and the Order of Phoenix", confEdit);
+mustReadList.addTask("Visit a doctor");
+mustReadList.addTask("Bake a cake");
+mustReadList.addTask("Cut nose hair");
+mustReadList.addTask("Save the World");
+mustReadList.deleteTask("Bake a cake", confirm("Are you sure?"));
+mustReadList.editTask("Cut nose hair", "Cut nose hair and shave legs", confirm ("Do you want to save changes?"));
+mustReadList.completeTask("Visit a doctor");
 
 console.log(mustReadList);
 console.log(mustReadList.getInfo);
-Object.freeze(mustReadList);
-console.log(Object.isFrozen(mustReadList));
+// Object.freeze(mustReadList);
+// console.log(Object.isFrozen(mustReadList));
 
