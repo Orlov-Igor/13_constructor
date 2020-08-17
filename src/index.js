@@ -31,14 +31,7 @@ ToDoList.prototype.addTask = function(value) {
 
 ToDoList.prototype.deleteTask = function(value, confirmation) {
     if (confirmation) {
-        let task = this.tasks.find(task => {
-        return task.value === value;
-     });
-     let i = this.tasks.indexOf(task);
-     if (i !== -1) {
-         this.tasks.splice(i, 1);
-         this.tasks = [...this.tasks];
-     }; 
+        this.tasks = this.tasks.filter(task => task.value !== value);
      }; 
 };
 
