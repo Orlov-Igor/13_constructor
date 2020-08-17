@@ -1,17 +1,31 @@
 const ToDoList = function(tasks = []) {
 
     this.tasks = tasks;
+
+    this.findDublicate = function(value) {
+        let newTask = this.tasks.find(function(task) {
+            return task.value === value;
+        });
+        if (newTask === undefined) {
+            return true;
+        } else {
+            return false;
+        };
+    };
 }
 
 
 ToDoList.prototype.addTask = function(value) {
-    
+    if (this.findDublicate(value)) {
         let task = {
             date: new Date(),
             completed: false,
             value,
         }    
         this.tasks = [task, ...this.tasks];
+    } else {
+        throw new Error("This task already exists");
+    }
     };
 
 
@@ -24,17 +38,17 @@ ToDoList.prototype.deleteTask = function(value, confirmation) {
      if (i !== -1) {
          this.tasks.splice(i, 1);
          this.tasks = [...this.tasks];
-     };
-       
+     }; 
      }; 
 };
 
 
 ToDoList.prototype.editTask = function(value, newValue, confirmation) {
     if (confirmation) {
-        this.tasks = this.tasks.map(task => {
-        let newTask = task;
-        if(task.value === value) {
+        if (this.findDublicate(newValue)) {
+            this.tasks = this.tasks.map(task => {
+            let newTask = task;
+            if(task.value === value) {
             newTask = {
                 ...task,
                 value: newValue
@@ -42,6 +56,9 @@ ToDoList.prototype.editTask = function(value, newValue, confirmation) {
         };
         return newTask;
         });
+        } else {
+            throw new Error("This task already exists");
+        }
     };  
 };
 
@@ -68,18 +85,18 @@ Object.defineProperty(ToDoList.prototype, 'getInfo', {
 );
 
 
-let mustReadList = new ToDoList([]);
+let augustList = new ToDoList([]);
 
-mustReadList.addTask("Visit a doctor");
-mustReadList.addTask("Bake a cake");
-mustReadList.addTask("Cut nose hair");
-mustReadList.addTask("Save the World");
-mustReadList.deleteTask("Bake a cake", confirm("Are you sure?"));
-mustReadList.editTask("Cut nose hair", "Cut nose hair and shave legs", confirm ("Do you want to save changes?"));
-mustReadList.completeTask("Visit a doctor");
+augustList.addTask("Visit a doctor");
+augustList.addTask("Bake a cake");
+augustList.addTask("Cut nose hair");
+augustList.addTask("Save the World");
+augustList.deleteTask("Bake a cake", confirm("Are you sure?"));
+augustList.editTask("Cut nose hair", "Cut nose hair and shave legs", confirm ("Do you want to save changes?"));
+augustList.completeTask("Visit a doctor");
 
-console.log(mustReadList);
-console.log(mustReadList.getInfo);
+console.log(augustList);
+console.log(augustList.getInfo);
 // Object.freeze(mustReadList);
 // console.log(Object.isFrozen(mustReadList));
 
